@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>[Project Name] | Chetan Prajapati</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html, body { width: 100%; min-height: 100%; background: var(--dark); color: var(--text-light); font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; transition: background 0.3s, color 0.3s; }
+        
+        :root {
+            --primary: #f97316; --primary-dark: #ea580c; --secondary: #3b82f6; --accent: #10b981;
+            --dark: #0c0a09; --darker: #080706; --card-bg: #1c1917; --card-border: #292524;
+            --text-light: #f5f5f4; --text-muted: #a8a29e;
+        }
+        body.light-theme {
+            --dark: #f9fafb; --darker: #ffffff; --card-bg: #ffffff; --card-border: #e5e7eb;
+            --text-light: #1f2937; --text-muted: #6b7280;
+        }
+
+        /* ===== NAVBAR ===== */
+        nav { position: fixed; top: 0; width: 100%; z-index: 1000; padding: 15px 60px; display: flex; justify-content: space-between; align-items: center; background: rgba(12,10,9,0.97); backdrop-filter: blur(20px); border-bottom: 1px solid var(--card-border); }
+        body.light-theme nav { background: rgba(255,255,255,0.97); }
+        .logo-container { display: flex; align-items: center; gap: 15px; }
+        .back-btn { color: var(--text-muted); text-decoration: none; font-size: 0.9rem; font-weight: 600; display: flex; align-items: center; gap: 8px; transition: color 0.2s; }
+        .back-btn:hover { color: var(--primary); }
+        .logo { font-size: 1.3rem; font-weight: 800; background: linear-gradient(135deg, var(--primary), #fb923c); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+        .theme-toggle-btn { width: 40px; height: 40px; border-radius: 50%; background: rgba(255,255,255,0.05); border: 1px solid var(--card-border); color: var(--text-muted); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.25s; }
+        body.light-theme .theme-toggle-btn { background: #f3f4f6; }
+
+        /* ===== DETAIL HERO ===== */
+        .detail-hero { padding: 140px 60px 50px; background: var(--darker); border-bottom: 1px solid var(--card-border); }
+        .hero-wrap { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: 1.2fr 1fr; gap: 50px; align-items: center; }
+        .proj-badge { display: inline-block; padding: 6px 14px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; margin-bottom: 16px; }
+        .hero-text h1 { font-size: 2.8rem; font-weight: 800; margin-bottom: 16px; line-height: 1.1; }
+        .hero-text p { font-size: 1.1rem; color: var(--text-muted); line-height: 1.6; margin-bottom: 24px; }
+        .tech-stack-row { display: flex; flex-wrap: wrap; gap: 8px; }
+        .st-tag { background: rgba(59,130,246,0.1); border: 1px solid rgba(59,130,246,0.2); color: var(--secondary); padding: 5px 12px; border-radius: 8px; font-size: 0.8rem; font-weight: 600; }
+        
+        .hero-media { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 16px; overflow: hidden; aspect-ratio: 16/10; display: flex; align-items: center; justify-content: center; position: relative; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
+        .hero-media img { width: 100%; height: 100%; object-fit: cover; }
+
+        /* ===== CONTENT BODY ===== */
+        .content-section { padding: 60px 60px; max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: 2fr 1fr; gap: 50px; }
+        .main-pane h2 { font-size: 1.8rem; font-weight: 700; margin: 32px 0 16px; }
+        .main-pane h2:first-child { margin-top: 0; }
+        .main-pane p { font-size: 1rem; color: var(--text-muted); line-height: 1.75; margin-bottom: 16px; }
+        
+        .feature-list { list-style: none; margin: 20px 0; }
+        .feature-list li { display: flex; gap: 12px; align-items: flex-start; margin-bottom: 12px; color: var(--text-muted); line-height: 1.6; }
+        .feature-list li i { color: var(--accent); margin-top: 4px; flex-shrink: 0; }
+
+        .side-pane { position: sticky; top: 110px; display: flex; flex-direction: column; gap: 24px; }
+        .meta-box { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 16px; padding: 24px; }
+        .meta-box h3 { font-size: 1.1rem; font-weight: 700; margin-bottom: 16px; border-bottom: 1px solid var(--card-border); padding-bottom: 8px; }
+        .meta-item { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.02); font-size: 0.9rem; }
+        .meta-item .lbl { color: var(--text-muted); }
+        .meta-item .val { font-weight: 600; color: var(--text-light); }
+
+        .project-links-box {
+            padding: 22px;
+        }
+
+        .live-link-btn {
+            width: 100%;
+            min-height: 46px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 12px 16px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: #ffffff;
+            text-decoration: none;
+            font-size: 0.92rem;
+            font-weight: 700;
+            border: none;
+            transition: transform 0.25s ease, box-shadow 0.25s ease;
+        }
+
+        .live-link-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 24px rgba(249, 115, 22, 0.35);
+        }
+
+        .live-link-btn i:last-child {
+            font-size: 0.78rem;
+            opacity: 0.85;
+        }
+
+        footer { background: var(--darker); border-top: 1px solid var(--card-border); padding: 30px 60px; text-align: center; color: var(--text-muted); font-size: 0.85rem; }
+
+        @media(max-width: 960px) {
+            nav { padding: 15px 30px; }
+            .detail-hero, .content-section { padding: 100px 30px 40px; grid-template-columns: 1fr; gap: 30px; }
+            .hero-wrap { grid-template-columns: 1fr; gap: 30px; }
+            .side-pane { position: static; }
+        }
+    </style>
+</head>
+<body>
+
+<nav>
+    <div class="logo-container">
+        <a href="index.html#projects" class="back-btn"><i class="fas fa-arrow-left"></i> Back</a>
+        <div class="logo">Portfolio Case Study</div>
+    </div>
+    <button id="themeToggle" class="theme-toggle-btn" aria-label="Toggle theme"><i class="fas fa-moon"></i></button>
+</nav>
+
+<section class="detail-hero">
+    <div class="hero-wrap">
+        <div class="hero-text">
+            <span class="proj-badge" id="badgeType" style="background: rgba(249,115,22,0.1); color: var(--primary);">Type</span>
+            <h1 id="projTitle">Project Title</h1>
+            <p id="projSubtitle">High-level architectural overview and optimization metric summary statement.</p>
+            <div class="tech-stack-row" id="techStack"></div>
+        </div>
+        <div class="hero-media">
+            <img id="mainImage" src="data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%22800%22%20height%3D%22500%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Crect%20width%3D%22100%25%22%20height%3D%22100%25%22%20fill%3D%22%23292524%22%2F%3E%3C%2Fsvg%3E" alt="App Preview Screen">
+        </div>
+    </div>
+</section>
+
+<div class="content-section">
+    <main class="main-pane">
+        <h2>Executive Problem Statement</h2>
+        <p id="problemText">Detailed context regarding manual enterprise overheads, bottlenecks, or compute challenges faced before deploying this specific solution engine.</p>
+        
+        <h2>Engineered Architecture & Implementation</h2>
+        <p id="architectureText">Architectural insights detailing processing logic, database configurations, pipeline steps, and middleware scaling strategies.</p>
+        
+        <h2>Key Technical Deliverables</h2>
+        <ul class="feature-list" id="featureList"></ul>
+    </main>
+
+    <aside class="side-pane">
+        <div class="meta-box">
+            
+            
+            <h3>Project Metrics</h3>
+            <div class="meta-item"><span class="lbl">Deployment Tier</span><span class="val" id="metaTier">-</span></div>
+            <div class="meta-item"><span class="lbl">DB Architecture</span><span class="val" id="metaDB">-</span></div>
+            <div class="meta-item"><span class="lbl">Caching Engine</span><span class="val" id="metaCache">-</span></div>
+            <div class="meta-item"><span class="lbl">Optimization Profile</span><span class="val" id="metaOptimization">-</span></div>
+        </div>
+
+        <div class="meta-box project-links-box" id="projectLinksBox">
+            <h3>Project Links</h3>
+
+            <a id="liveWebsite" href="#" target="_blank" class="live-link-btn">
+                <i class="fas fa-globe"></i>
+                <span>Live Website</span>
+                <i class="fas fa-arrow-up-right-from-square"></i>
+            </a>
+        </div>
+        
+    </aside>
+</div>
+
+<footer>
+    &copy; 2026 &middot; Chetan Prajapati &middot; Tailored Engineering Pipelines
+</footer>
+
+<script>
+    // System Theme Engine Synchronization
+    const themeToggle = document.getElementById('themeToggle');
+    const body = document.body;
+    function applyTheme(theme) {
+        if (theme === 'light') { body.classList.add('light-theme'); themeToggle.innerHTML = '<i class="fas fa-sun"></i>'; }
+        else { body.classList.remove('light-theme'); themeToggle.innerHTML = '<i class="fas fa-moon"></i>'; }
+    }
+    applyTheme(localStorage.getItem('theme') || 'dark');
+    themeToggle.addEventListener('click', () => {
+        const next = body.classList.contains('light-theme') ? 'dark' : 'light';
+        applyTheme(next); localStorage.setItem('theme', next);
+    });
+
+    // Content Router Mapping Object
+    const projectContent = {
+
+        "sales-dashboard": {
+            title: "Sales Automation & Scheduling Dashboard",
+            subtitle: "Automated report scheduler featuring an AI-powered conversational query assistant and Telegram warning alerts.",
+            type: "Web Application / Automation",
+            img: "assets/img/sales_dashboard.jpg",
+            website: "https://your-project-site.com",
+            stack: ["Python", "Django", "AI Chatbot", "Telegram API", "MySQL", "Pandas", "Crontab"],
+            problem: "Enterprise financial managers frequently lost critical hours compiling and formatting statements manually for distributed stakeholders.",
+            architecture: "Developed inside a structured Django system backed by an optimized MySQL relational layout.",
+            features: [
+                "Granular scheduling architecture handling weekly, monthly, quarterly, and fiscal workflows.",
+                "Integrated conversational assistant designed for direct statement analysis via data parsers.",
+                "Real-time event tracking and system anomaly alert distribution via programmatic Telegram API hooks."
+            ],
+            metrics: {
+                tier: "Enterprise Web Portal",
+                db: "MySQL 8.0 Engine",
+                cache: "Internal Django State",
+                opt: "Pandas Vectorized Computations"
+            }
+        },
+
+        "hr-portal": {
+            title: "Enterprise Lifecycle HR Portal",
+            subtitle: "Role-Based Access Control system organizing corporate operational tracking profiles from secure onboarding through annual performance tracking metrics.",
+            type: "Web Application",
+            img: "assets/img/hr_portal.jpg",
+            stack: ["Django", "MySQL", "RBAC Framework", "Bootstrap 5", "Django ORM"],
+            problem: "Internal administrative systems lacked unified security scopes. This created information security overlap and operational drag during onboarding verification phases.",
+            architecture: "Implements strict custom Role-Based Access Control (RBAC) middleware patterns inside Django. This ensures data isolation fields between general Employee, Supervisor, and Administrator permissions.",
+            features: [
+                "Granular multi-role security boundaries (User / Manager / Corporate Admin).",
+                "Comprehensive management tools tracking standard leave metrics, review profiles, and probation logs.",
+                "Highly protected internal static asset storage handling binary verification data objects cleanly."
+            ],
+            metrics: { tier: "Internal Corporate Suite", db: "MySQL (Isolated Schemes)", cache: "Session-Level DB Caching", opt: "Middleware Permission Interceptors" }
+        },
+
+        "feedback-vault": {
+            title: "The Feedback Vault Ecosystem",
+            subtitle: "Cross-platform data aggregation engine capturing multi-channel input flows via native mobile terminals and inline mailing assets.",
+            type: "Web + Mobile Integration",
+            img: "assets/img/feedback_vault.jpg",
+            stack: ["Django", "React Native", "REST API Engine", "Relational Analytics", "PostgreSQL"],
+            problem: "Customer evaluation capture strategies were disorganized, experiencing high data drop rates between physical interaction points and office analytics applications.",
+            architecture: "Utilizes a highly performant Django REST API architecture acting as a central processing core. This endpoint ingests real-time JSON strings broadcast by field tablets running specialized React Native frontends.",
+            features: [
+                "Asynchronous processing setups capturing field tablet inputs and tracking inline embedded template items.",
+                "Central administration control interface delivering responsive interaction and trend tracking visualizations.",
+                "Dynamic structural groupings sorting metrics by regional branches and tracking specific team performance logs."
+            ],
+            metrics: { tier: "Hybrid Cloud Portal", db: "PostgreSQL Production", cache: "Redis Token Storage", opt: "Indexed Time-Series Ingestion" }
+        },
+
+        "mis-reporting-portal": {
+            title: "Optimized MIS Reporting Engine",
+            subtitle: "Enterprise intelligence platform running specialized Pandas pipelines and highly indexed SQL data extraction paths.",
+            type: "Data Architecture Portal",
+            img: "assets/img/mis_portal.jpg",
+            stack: ["Python", "Django", "Pandas Core", "PostgreSQL Core", "SQL Profiling"],
+            problem: "Massive scale transaction databases encountered processing bottlenecks when calculating historical distribution statistics and tracking regional metrics under heavy loads.",
+            architecture: "Constructed with optimized raw database queries utilizing composite keys and targeted lookups. Handled records pass into highly optimized Pandas execution workers for quick calculation processes before output compilation.",
+            features: [
+                "Fast generation speeds compiling buying habits, asset redemptions, and complex geographical charts.",
+                "Optimized query profiles that reduce database strain under peak reporting conditions.",
+                "Clean export mechanisms compiling large datasets directly into standardized Excel and PDF templates."
+            ],
+            metrics: { tier: "Analytical MIS Layer", db: "PostgreSQL (Read-Optimized)", cache: "Query Definition Caching", opt: "Pandas Vector Blocks" }
+        },
+
+        "shareplex-scripts": {
+            title: "Shareplex Performance Cache Sync Engine",
+            subtitle: "High-speed background automation utilities processing live storage transactions for quick execution via specialized Redis caches.",
+            type: "API Backend Engineering",
+            img: "assets/img/shareplex_backend.jpg",
+            stack: ["Python Core", "Redis Cache Clusters", "Data Transformation", "System Automation"],
+            problem: "Web presentation interfaces suffered from transaction request lag because they queried slow, read-locked backends during high-concurrency periods.",
+            architecture: "Engineered high-efficiency Python worker processes that attach to transaction feeds. The workers safely transform unstructured records into flat memory maps, pushing updates directly to scalable Redis caching layers.",
+            features: [
+                "High-throughput pipeline tracking real-time record updates continuously.",
+                "Low-latency presentation endpoints providing quick application data retrieval.",
+                "Measurable optimization improvements that eliminate transaction processing delay."
+            ],
+            metrics: { tier: "High-Speed Memory Cache Sync", db: "Oracle Backend Source", cache: "Redis Data Structures", opt: "In-Memory Map Computations" }
+        },
+
+        "automation-suite": {
+            title: "Financial Automation Desktop Suite",
+            subtitle: "Desktop tools built to automate complex transaction matching processes for non-technical office staff.",
+            type: "Desktop Automation Studio",
+            img: "assets/img/automation_desktop.jpg",
+            stack: ["Python", "Tkinter GUI", "PyInstaller Engine", "Data Analysis Modules"],
+            problem: "Accounting specialists regularly spent hours manually comparing distributed balance tracking sheets, which led to frequent matching discrepancies.",
+            architecture: "A desktop automation package built entirely in Python using clean Tkinter layouts. It compiles down to standalone, zero-dependency executable assets using PyInstaller engines.",
+            features: [
+                "Advanced comparison workflows processing transaction histories against active asset spreadsheets.",
+                "Automated cost allocation tools that streamline document tracking pipelines.",
+                "Zero-install executable deployment profiles that run natively on user workstations without local Python runtimes."
+            ],
+            metrics: { tier: "Desktop Client Executable", db: "Local File System", cache: "Volatile Memory Dataframes", opt: "PyInstaller Executable Compilations" }
+        },
+
+        "cdms-manager": {
+            title: "CDMS — Customer Database Manager",
+            subtitle: "Desktop data management tool delivering customer segment analytics and file cleaning profiles.",
+            type: "Desktop System Tool",
+            img: "assets/img/cdms_manager.jpg",
+            stack: ["Python Engine", "Tkinter", "Pandas Library", "PyInstaller Deployment"],
+            problem: "Non-technical office staff frequently struggled with system errors while attempting to process, parse, and clean complex client profile data tables using traditional software.",
+            architecture: "Combines a clean Tkinter desktop user interface with powerful underlying Pandas processing modules. The engine executes localized dataset filtering, deduplication, and matching rules directly inside system memory.",
+            features: [
+                "Intuitive point-and-click tool definitions for customer categorization and profiling workflows.",
+                "Fast cleaning operations that remove empty fields and fix syntax issues across large source arrays.",
+                "Clean export utilities outputting production-ready CSV files formatted for instant platform migration."
+            ],
+            metrics: { tier: "Standalone Workstation Tool", db: "Flat CSV / XLSX Formats", cache: "Local Workstation Engine Memory", opt: "Vector Filtering Rules" }
+        },
+
+        // ── BookMeet ─────────────────────────────────────────────────────────
+        "bookmeet": {
+            title: "BookMeet — Corporate Meeting Room Management System",
+            subtitle: "Enterprise-grade room booking portal with real-time conflict detection, multi-branch support, glassmorphism UI, and automated email confirmation workflows.",
+            type: "Web Application / Enterprise Portal",
+            img: "assets/img/bookmeet.jpg",
+            stack: ["Django 5.2", "Python 3.10", "SQLite / PostgreSQL", "JavaScript ES6+", "MDB Bootstrap", "SMTP Email", "Font Awesome 6"],
+            problem: "Corporate employees had no centralized system to check room availability or reserve meeting spaces across multiple office branches. Double-bookings, manual scheduling conflicts, and zero audit trails created significant operational overhead for facility and HR teams alike.",
+            architecture: "Built on Django 5.2 with a dynamic URL routing system that maps each branch to its own booking namespace. Conflict detection is enforced at the ORM query level before any reservation is committed. A Django SMTP email pipeline dispatches styled HTML confirmation emails upon successful booking. The custom admin panel is built as a separate Django view with full branch and room CRUD, completely independent of Django's default admin interface. Role-based middleware ensures super-admin controls are entirely invisible to standard employee accounts.",
+            features: [
+                "Real-time conflict detection at the database ORM layer — prevents any double-booking before it persists.",
+                "Dynamic multi-branch routing supporting unlimited branch and room configurations from the admin dashboard.",
+                "Automated HTML email confirmations dispatched instantly upon every successful booking submission.",
+                "Role-based access control separating Employee and Super Admin permission scopes with protected view middleware.",
+                "Full global audit trail with a booking history log, real-time search, and branch-level filtering.",
+                "Glassmorphism UI with dark/light theme toggle, toast notifications, and animated loading states.",
+                "Token-based password reset flow using Django's built-in time-limited secure authentication tokens.",
+                "Visual date picker with past-date suppression and end-time validation to block invalid booking windows."
+            ],
+            metrics: { tier: "Enterprise Web Portal", db: "SQLite (Dev) / PostgreSQL (Prod)", cache: "Django Session State", opt: "ORM Conflict Query + SMTP Pipeline" }
+        }
+        // ─────────────────────────────────────────────────────────────────────
+
+    };
+
+    // Simple Client Hash Engine Router
+    function routePayload() {
+        const hash = window.location.hash.substring(1) || Object.keys(projectContent)[0];
+        const data = projectContent[hash];
+
+        const liveWebsite = document.getElementById('liveWebsite');
+        const projectLinksBox = document.getElementById('projectLinksBox');
+
+        if (data.website) {
+            liveWebsite.href = data.website;
+            projectLinksBox.style.display = 'block';
+        } else {
+            projectLinksBox.style.display = 'none';
+        }
+
+        if(!data) return;
+
+        document.title = `${data.title} | Chetan Prajapati`;
+        document.getElementById('projTitle').innerText = data.title;
+        document.getElementById('projSubtitle').innerText = data.subtitle;
+        document.getElementById('problemText').innerText = data.problem;
+        document.getElementById('architectureText').innerText = data.architecture;
+        document.getElementById('mainImage').src = data.img;
+        
+        const badge = document.getElementById('badgeType');
+        badge.innerText = data.type;
+        
+        // Build Tag Chains
+        const stackContainer = document.getElementById('techStack');
+        stackContainer.innerHTML = '';
+        data.stack.forEach(t => {
+            const el = document.createElement('span'); el.className = 'st-tag'; el.innerText = t;
+            stackContainer.appendChild(el);
+        });
+
+        // Build Lists
+        const listContainer = document.getElementById('featureList');
+        listContainer.innerHTML = '';
+        data.features.forEach(f => {
+            const li = document.createElement('li');
+            li.innerHTML = `<i class="fas fa-check-circle"></i> <span>${f}</span>`;
+            listContainer.appendChild(li);
+        });
+
+        // Map Metrics
+        document.getElementById('metaTier').innerText = data.metrics.tier;
+        document.getElementById('metaDB').innerText = data.metrics.db;
+        document.getElementById('metaCache').innerText = data.metrics.cache;
+        document.getElementById('metaOptimization').innerText = data.metrics.opt;
+        document.getElementById('liveWebsite').href = data.website || '#';
+    }
+
+    window.addEventListener('hashchange', routePayload);
+    window.addEventListener('DOMContentLoaded', routePayload);
+</script>
+</body>
+</html>
