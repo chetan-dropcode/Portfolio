@@ -111,7 +111,7 @@
       color: var(--text-muted);
       cursor: pointer;
 
-      display: flex;               /* ✅ FIX: was display:none */
+      display: flex;
       align-items: center;
       justify-content: center;
 
@@ -189,11 +189,91 @@
       justify-content: center;
       position: relative;
       box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+      cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
+
+    .hero-media:hover {
+      transform: scale(1.02);
+      box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+    }
+
     .hero-media img{
       width: 100%;
       height: 100%;
       object-fit: cover;
+    }
+
+    /* ================= IMAGE MODAL ================= */
+    .image-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.95);
+      z-index: 2000;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      animation: fadeIn 0.3s ease;
+      overflow-y: auto;
+    }
+
+    .image-modal.active {
+      display: flex;
+    }
+
+    .image-modal-content {
+      position: relative;
+      max-width: 90vw;
+      max-height: 90vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .image-modal img {
+      max-width: 100%;
+      max-height: 90vh;
+      object-fit: contain;
+      border-radius: 8px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
+    }
+
+    .image-modal-close {
+      position: absolute;
+      top: 20px;
+      right: 30px;
+      width: 44px;
+      height: 44px;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 50%;
+      color: #fff;
+      font-size: 1.5rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.25s ease;
+      z-index: 2001;
+      padding: 0;
+    }
+
+    .image-modal-close:hover {
+      background: rgba(249, 115, 22, 0.3);
+      border-color: var(--primary);
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+      }
+      to {
+        opacity: 1;
+      }
     }
 
     /* ================= CONTENT BODY ================= */
@@ -489,11 +569,23 @@
       }
       .meta-box { padding: 18px; }
       .project-links-box { padding: 18px; }
+
+      .image-modal-close {
+        top: 12px;
+        right: 12px;
+        width: 40px;
+        height: 40px;
+        font-size: 1.2rem;
+      }
+
+      .image-modal img {
+        max-height: 85vh;
+      }
     }
 
     @media (max-width: 420px){
       .detail-hero{ padding-top: 98px; }
-      .back-btn i { display: none; } /* reduces crowding on very small screens */
+      .back-btn i { display: none; }
     }
   </style>
 </head>
@@ -521,7 +613,7 @@
         <div class="tech-stack-row" id="techStack"></div>
       </div>
 
-      <div class="hero-media">
+      <div class="hero-media" id="heroMediaContainer">
         <img id="mainImage"
              src="data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%22800%22%20height%3D%22500%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Crect%20width%3D%22100%25%22%20height%3D%22100%25%22%20fill%3D%22%23292524%22%2F%3E%3C%2Fsvg%3E"
              alt="App Preview Screen">
@@ -601,6 +693,16 @@
     &copy; 2026 &middot; Chetan Prajapati &middot; Tailored Engineering Pipelines
   </footer>
 
+  <!-- Image Fullscreen Modal -->
+  <div class="image-modal" id="imageModal">
+    <button class="image-modal-close" id="modalClose" aria-label="Close image">
+      <i class="fas fa-times"></i>
+    </button>
+    <div class="image-modal-content">
+      <img id="modalImage" src="" alt="Fullscreen Image" />
+    </div>
+  </div>
+
   <script>
     // System Theme Engine Synchronization
     const themeToggle = document.getElementById('themeToggle');
@@ -624,27 +726,75 @@
       localStorage.setItem('theme', next);
     });
 
+    // ================= IMAGE MODAL HANDLER ================= 
+    const heroMediaContainer = document.getElementById('heroMediaContainer');
+    const mainImage = document.getElementById('mainImage');
+    const imageModal = document.getElementById('imageModal');
+    const modalImage = document.getElementById('modalImage');
+    const modalClose = document.getElementById('modalClose');
+
+    // Open modal on image click
+    heroMediaContainer.addEventListener('click', () => {
+      modalImage.src = mainImage.src;
+      imageModal.classList.add('active');
+      document.body.style.overflow = 'hidden';
+    });
+
+    // Close modal on close button click
+    modalClose.addEventListener('click', (e) => {
+      e.stopPropagation();
+      imageModal.classList.remove('active');
+      document.body.style.overflow = 'auto';
+    });
+
+    // Close modal on background click
+    imageModal.addEventListener('click', (e) => {
+      if (e.target === imageModal) {
+        imageModal.classList.remove('active');
+        document.body.style.overflow = 'auto';
+      }
+    });
+
+    // Prevent closing when clicking on image or close button
+    modalImage.addEventListener('click', (e) => {
+      e.stopPropagation();
+    });
+
+    // Close modal on Escape key
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && imageModal.classList.contains('active')) {
+        imageModal.classList.remove('active');
+        document.body.style.overflow = 'auto';
+      }
+    });
+
     // Content Router Mapping Object
     const projectContent = {
-      "sales-dashboard": {
-        title: "Sales Automation & Scheduling Dashboard",
-        subtitle: "Automated report scheduler featuring an AI-powered conversational query assistant and Telegram warning alerts.",
-        type: "Web Application / Automation",
-        img: "assets/img/sales_dashboard.jpg",
-        website: "https://your-project-site.com",
-        stack: ["Python", "Django", "AI Chatbot", "Telegram API", "MySQL", "Pandas", "Crontab"],
-        problem: "Enterprise financial managers frequently lost critical hours compiling and formatting statements manually for distributed stakeholders.",
-        architecture: "Developed inside a structured Django system backed by an optimized MySQL relational layout.",
+        "sales-dashboard": {
+        title: "Sales Automation & Financial Statement Distribution System",
+        subtitle: "Automated financial statement generation, scheduling, and email delivery platform for investors.",
+        type: "Web Application / Process Automation",
+        img: "assets/img/sales.png",
+        stack: ["Python", "Django", "MySQL", "REST API", "Cron Jobs", "Email Automation"],
+        problem: "Financial institutions required a reliable solution to automate statement generation and distribution for thousands of investors based on their preferred delivery frequency. Manual processing resulted in delays, operational overhead, and tracking challenges.",
+        architecture: "Designed and developed a Django-based automation platform integrated with external CAMS APIs for statement retrieval, MySQL for subscriber management, scheduled background jobs for automated execution, and email services for secure PDF delivery.",
         features: [
-          "Granular scheduling architecture handling weekly, monthly, quarterly, and fiscal workflows.",
-          "Integrated conversational assistant designed for direct statement analysis via data parsers.",
-          "Real-time event tracking and system anomaly alert distribution via programmatic Telegram API hooks."
+          "Investor subscription management using Folio Number validation.",
+          "Automated retrieval of investor email addresses through CAMS API integration.",
+          "Configurable statement frequencies including Weekly, Monthly, and Quarterly schedules.",
+          "Automated PDF statement generation and secure email delivery.",
+          "Subscription modification and unsubscribe functionality.",
+          "Scheduled task execution using cron-based automation.",
+          "User login/logout activity tracking and audit logging.",
+          "Comprehensive error logging and monitoring for operational visibility.",
+          "Excel export functionality for administrative reporting.",
+          "Admin dashboard with advanced filtering, searching, and record management."
         ],
         metrics: {
-          tier: "Enterprise Web Portal",
-          db: "MySQL 8.0 Engine",
+          tier: "Enterprise Automation Platform",
+          db: "MySQL",
           cache: "Internal Django State",
-          opt: "Pandas Vectorized Computations"
+          opt: "REST API's"
         }
       },
 
@@ -661,23 +811,45 @@
           "Comprehensive management tools tracking standard leave metrics, review profiles, and probation logs.",
           "Highly protected internal static asset storage handling binary verification data objects cleanly."
         ],
-        metrics: { tier: "Internal Corporate Suite", db: "MySQL (Isolated Schemes)", cache: "Session-Level DB Caching", opt: "Middleware Permission Interceptors" }
+        metrics: { 
+          tier: "Internal Corporate Suite", 
+          db: "MySQL (Isolated Schemes)", 
+          cache: "Session-Level DB Caching", 
+          opt: "Middleware Permission Interceptors" 
+        }
       },
 
       "feedback-vault": {
         title: "The Feedback Vault Ecosystem",
-        subtitle: "Cross-platform data aggregation engine capturing multi-channel input flows via native mobile terminals and inline mailing assets.",
-        type: "Web + Mobile Integration",
-        img: "assets/img/feedback_vault.jpg",
-        stack: ["Django", "React Native", "REST API Engine", "Relational Analytics", "PostgreSQL"],
-        problem: "Customer evaluation capture strategies were disorganized, experiencing high data drop rates between physical interaction points and office analytics applications.",
-        architecture: "Utilizes a highly performant Django REST API architecture acting as a central processing core. This endpoint ingests real-time JSON strings broadcast by field tablets running specialized React Native frontends.",
-        features: [
-          "Asynchronous processing setups capturing field tablet inputs and tracking inline embedded template items.",
-          "Central administration control interface delivering responsive interaction and trend tracking visualizations.",
-          "Dynamic structural groupings sorting metrics by regional branches and tracking specific team performance logs."
+        subtitle: "Enterprise-grade multi-channel feedback aggregation platform combining RESTful mobile APIs with administrative dashboard controls for real-time customer sentiment analysis and performance tracking.",
+        type: "Hybrid Web + Mobile Integration Platform",
+        img: "assets/img/feedback.png",
+        stack: [
+          "Django REST Framework",
+          "React Native Mobile Clients",
+          "PostgreSQL Database",
+          "Redis Caching Layer",
+          "Sendgrid Email Integration",
+          "JWT Custom Token Authentication"
         ],
-        metrics: { tier: "Hybrid Cloud Portal", db: "PostgreSQL Production", cache: "Redis Token Storage", opt: "Indexed Time-Series Ingestion" }
+        problem: "Organizations faced fragmented feedback collection across multiple touchpoints, resulting in data silos between field operations and central analytics. Mobile field teams lacked synchronized access to configuration templates, while administrators struggled with disconnected reporting interfaces and manual data aggregation workflows.",
+        architecture: "Dual-layer architecture featuring a high-performance Django REST API serving as the central processing core for native React Native mobile applications, coupled with a traditional Django template-based administration portal. The API layer handles asynchronous JSON ingestion from field tablets with custom token-based authentication, while the admin interface provides comprehensive CRUD operations and trend visualization. Real-time dashboard analytics enable branch-level and RM-level performance tracking with time-series filtering and weighted sentiment scoring.",
+        features: [
+          "Native Mobile Integration: React Native client applications communicate via RESTful endpoints for real-time feedback submission, emoji-based sentiment capture, and multi-option pill selection from field terminals.",
+          "Dual Authentication System: Custom JWT token management for mobile API clients alongside session-based authentication for web administrators, with granular permission controls for superuser access.",
+          "Real-time Dashboard Analytics: Admin portal featuring time-series filtering (3-month, 6-month, 1-year, custom date ranges) with branch and relationship manager (RM) performance metrics, percentage calculations, and average sentiment scoring.",
+          "Dynamic Content Management: Administrators can create and manage emoji templates, feedback pills, branch configurations, RM assignments, and asset views through intuitive admin interfaces.",
+          "Email-driven Feedback Collection: Sendgrid integration sends personalized emoji selection links via email to field staff, enabling asynchronous feedback capture with 24-hour IP-based deduplication to prevent duplicate submissions.",
+          "Comprehensive Audit Logging: Complete user session tracking, action logging with timestamps, bulk operation logging, and error code categorization for regulatory compliance.",
+          "Multi-level Data Aggregation: Branch-level, RM-level, and customer-level feedback analytics with weighted sentiment scoring (Worst=1, Bad=2, Average=3, Good=4, Excellent=5).",
+          "Flexible Feedback Templates: Asset-based pill grouping, customizable review fields, and mobile image capture with base64 encoding for seamless cross-platform compatibility."
+        ],
+        metrics: {
+          tier: "Hybrid Cloud Architecture",
+          db: "PostgreSQL Production with normalized relational schema",
+          cache: "Redis Token Storage + JWT Session Management",
+          opt: "Indexed datetime filtering, bulk deletion with chunking, IP-based deduplication"
+        }
       },
 
       "mis-reporting-portal": {
@@ -693,7 +865,12 @@
           "Optimized query profiles that reduce database strain under peak reporting conditions.",
           "Clean export mechanisms compiling large datasets directly into standardized Excel and PDF templates."
         ],
-        metrics: { tier: "Analytical MIS Layer", db: "PostgreSQL (Read-Optimized)", cache: "Query Definition Caching", opt: "Pandas Vector Blocks" }
+        metrics: { 
+          tier: "Analytical MIS Layer", 
+          db: "PostgreSQL (Read-Optimized)", 
+          cache: "Query Definition Caching", 
+          opt: "Pandas Vector Blocks" 
+        }
       },
 
       "shareplex-scripts": {
@@ -709,7 +886,12 @@
           "Low-latency presentation endpoints providing quick application data retrieval.",
           "Measurable optimization improvements that eliminate transaction processing delay."
         ],
-        metrics: { tier: "High-Speed Memory Cache Sync", db: "Oracle Backend Source", cache: "Redis Data Structures", opt: "In-Memory Map Computations" }
+        metrics: { 
+          tier: "High-Speed Memory Cache Sync", 
+          db: "Oracle Backend Source", 
+          cache: "Redis Data Structures", 
+          opt: "In-Memory Map Computations" 
+        }
       },
 
       "automation-suite": {
@@ -725,7 +907,12 @@
           "Automated cost allocation tools that streamline document tracking pipelines.",
           "Zero-install executable deployment profiles that run natively on user workstations without local Python runtimes."
         ],
-        metrics: { tier: "Desktop Client Executable", db: "Local File System", cache: "Volatile Memory Dataframes", opt: "PyInstaller Executable Compilations" }
+        metrics: { 
+          tier: "Desktop Client Executable", 
+          db: "Local File System", 
+          cache: "Volatile Memory Dataframes", 
+          opt: "PyInstaller Executable Compilations" 
+        }
       },
 
       "cdms-manager": {
@@ -741,7 +928,12 @@
           "Fast cleaning operations that remove empty fields and fix syntax issues across large source arrays.",
           "Clean export utilities outputting production-ready CSV files formatted for instant platform migration."
         ],
-        metrics: { tier: "Standalone Workstation Tool", db: "Flat CSV / XLSX Formats", cache: "Local Workstation Engine Memory", opt: "Vector Filtering Rules" }
+        metrics: { 
+          tier: "Standalone Workstation Tool", 
+          db: "Flat CSV / XLSX Formats", 
+          cache: "Local Workstation Engine Memory", 
+          opt: "Vector Filtering Rules" 
+        }
       },
 
       "bookmeet": {
@@ -762,7 +954,12 @@
           "Token-based password reset flow using Django's built-in time-limited secure authentication tokens.",
           "Visual date picker with past-date suppression and end-time validation to block invalid booking windows."
         ],
-        metrics: { tier: "Enterprise Web Portal", db: "SQLite (Dev) / PostgreSQL (Prod)", cache: "Django Session State", opt: "ORM Conflict Query + SMTP Pipeline" }
+        metrics: { 
+          tier: "Enterprise Web Portal", 
+          db: "SQLite (Dev) / PostgreSQL (Prod)", 
+          cache: "Django Session State", 
+          opt: "ORM Conflict Query + SMTP Pipeline" 
+        }
       }
     };
 
