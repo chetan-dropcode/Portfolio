@@ -733,21 +733,18 @@
     const modalImage = document.getElementById('modalImage');
     const modalClose = document.getElementById('modalClose');
 
-    // Open modal on image click
     heroMediaContainer.addEventListener('click', () => {
       modalImage.src = mainImage.src;
       imageModal.classList.add('active');
       document.body.style.overflow = 'hidden';
     });
 
-    // Close modal on close button click
     modalClose.addEventListener('click', (e) => {
       e.stopPropagation();
       imageModal.classList.remove('active');
       document.body.style.overflow = 'auto';
     });
 
-    // Close modal on background click
     imageModal.addEventListener('click', (e) => {
       if (e.target === imageModal) {
         imageModal.classList.remove('active');
@@ -755,12 +752,10 @@
       }
     });
 
-    // Prevent closing when clicking on image or close button
     modalImage.addEventListener('click', (e) => {
       e.stopPropagation();
     });
 
-    // Close modal on Escape key
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape' && imageModal.classList.contains('active')) {
         imageModal.classList.remove('active');
@@ -770,7 +765,38 @@
 
     // Content Router Mapping Object
     const projectContent = {
-        "sales-dashboard": {
+
+      "email-automation": {
+        title: "Outlook Email Automation & Intelligent Forwarding System",
+        subtitle: "Automated Outlook inbox monitoring platform that classifies incoming emails against a registered contact database and forwards them to authorised recipients in real time.",
+        type: "Process Automation / Backend Service",
+        img: "assets/img/outlook_automation.png",
+        stack: ["Python", "Django", "Microsoft Graph API", "MSAL", "Django ORM", "Logging"],
+        problem: "Operations teams managing a shared Outlook mailbox had no automated way to route incoming emails to the correct authorised personnel. Emails arrived in a shared inbox but had to be manually reviewed, classified, and forwarded — causing delays, missed communications, and compliance gaps when sensitive financial correspondence landed without reaching the right registered contacts.",
+        architecture: "Built as a standalone Python daemon that runs on a configurable polling interval (default 5 minutes). It authenticates against Microsoft Azure using MSAL client-credential flow to obtain a short-lived Graph API token, then queries both the Inbox and Junk Email folders of the shared Outlook mailbox via the Microsoft Graph REST API. Each fetched email is cross-referenced against the Django-managed FolioContact database to determine whether the sender, To, or CC recipients match any approved registered contacts. Emails are labelled as 'Registered' or 'Unregistered' and forwarded with a structured HTML body to the full list of active system users. A JSON-based persistent state file prevents duplicate forwarding across polling cycles. Daily rotating log files capture every authentication event, email fetch, match decision, and forward outcome for full operational auditability.",
+        features: [
+          "Automated Microsoft Graph API authentication using MSAL client-credentials flow — no user interaction required for token refresh.",
+          "Dual-folder polling: scans both Inbox and Junk Email folders to ensure no legitimate correspondence is missed.",
+          "Contact registration check: cross-references sender and all recipient fields (To, CC, BCC) against the Django FolioContact model, requiring is_approved=True for a Registered classification.",
+          "Smart email labelling: prefixes forwarded subject lines with 'Registered' or 'Unregistered' so recipients instantly know the sender's authorisation status.",
+          "Structured HTML forward body: reconstructs original From, To, CC, and received timestamp (converted from UTC to IST) in a clean, readable format.",
+          "Duplicate suppression via JSON state file: tracks processed email IDs per day so restarting the service never causes re-forwarding.",
+          "Configurable polling interval: default 5-minute cycle with graceful error recovery — failed cycles wait 5 minutes before retrying without crashing the daemon.",
+          "Daily rotating log files stored in a dedicated Script_logs folder, with both file and console handlers for live monitoring.",
+          "Role-based admin panel (Django): manage registered users, approve or revoke FolioContact records, and control which email addresses are treated as authorised recipients.",
+          "Secure password reset flow: token-based forgot-password and reset-password views using Django's built-in time-limited token generator.",
+          "Full CRUD operations for EmployeeProfile, FolioRecord, and FolioContact with multi-step admin authorisation before any record is considered active.",
+          "Deletion audit log: every deleted profile, folio, or contact is serialised to a DeletedRecordLog snapshot (including full contact history) before removal, preserving a complete compliance trail."
+        ],
+        metrics: {
+          tier: "Background Daemon / Scheduled Service",
+          db: "Django ORM (SQLite / PostgreSQL)",
+          cache: "JSON File-Based State (processed_emails.json)",
+          opt: "Microsoft Graph API + MSAL Token Caching"
+        }
+      },
+
+      "sales-dashboard": {
         title: "Sales Automation & Financial Statement Distribution System",
         subtitle: "Automated financial statement generation, scheduling, and email delivery platform for investors.",
         type: "Web Application / Process Automation",
