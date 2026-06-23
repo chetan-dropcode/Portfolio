@@ -1726,7 +1726,7 @@
         sendBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
 
         try {
-            const response = await fetch("https://api.chetanforgelab.com/api/send-message/", {
+            const response = await fetch("https://portfolioapibackend.pythonanywhere.com/api/send-message/", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ name, email, message })
