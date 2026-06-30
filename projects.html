@@ -28,7 +28,15 @@
             --text-muted: #6b7280;
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * {
+            margin: 0; padding: 0; box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+        button, a { -webkit-tap-highlight-color: transparent; outline: none; }
+        .filter-btn:focus, .filter-btn:focus-visible {
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(249,115,22,0.4);
+        }
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: var(--dark);
