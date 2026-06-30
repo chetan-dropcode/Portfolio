@@ -520,6 +520,48 @@
       display: none;
     }
 
+    /* ================= PAGE LOADER ================= */
+    #pageLoader{
+      position: fixed;
+      inset: 0;
+      z-index: 3000;
+      background: var(--dark);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 16px;
+      transition: opacity 0.35s ease, visibility 0.35s ease;
+    }
+    .loader-spinner{
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      border: 3px solid var(--card-border);
+      border-top-color: var(--primary);
+      animation: loaderSpin 0.8s linear infinite;
+    }
+    .loader-text{
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      letter-spacing: 0.02em;
+    }
+    @keyframes loaderSpin{
+      to{ transform: rotate(360deg); }
+    }
+
+    body.page-ready #pageLoader{
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+    body:not(.page-ready) .detail-hero,
+    body:not(.page-ready) .content-section,
+    body:not(.page-ready) footer{
+      visibility: hidden;
+    }
+
     /* ================= FOOTER ================= */
     footer{
       background: var(--darker);
@@ -1118,7 +1160,6 @@
       document.getElementById('projSubtitle').innerText = data.subtitle;
       document.getElementById('problemText').innerText = data.problem;
       document.getElementById('architectureText').innerText = data.architecture;
-      document.getElementById('mainImage').src = data.img;
 
       const badge = document.getElementById('badgeType');
       badge.innerText = data.type;
@@ -1144,10 +1185,34 @@
       document.getElementById('metaDB').innerText = data.metrics.db;
       document.getElementById('metaCache').innerText = data.metrics.cache;
       document.getElementById('metaOptimization').innerText = data.metrics.opt;
+
+      // ===== Reveal page only once the hero image is fully loaded =====
+      const preloader = new Image();
+      preloader.onload = revealPage;
+      preloader.onerror = revealPage; // never block the page forever, even if image fails
+      preloader.src = data.img;
+      mainImage.src = data.img;
     }
 
-    window.addEventListener('hashchange', routePayload);
+    function revealPage() {
+      document.body.classList.add('page-ready');
+    }
+
+    // Safety net: if something goes wrong and the image never resolves,
+    // don't leave the user staring at a loader forever.
+    setTimeout(revealPage, 6000);
+
+    window.addEventListener('hashchange', () => {
+      document.body.classList.remove('page-ready');
+      routePayload();
+    });
     window.addEventListener('DOMContentLoaded', routePayload);
   </script>
+
+  <!-- ===== PAGE LOADER ===== -->
+  <div id="pageLoader">
+    <div class="loader-spinner"></div>
+    <div class="loader-text">Loading project…</div>
+  </div>
 </body>
 </html>
