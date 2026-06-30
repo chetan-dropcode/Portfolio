@@ -407,7 +407,20 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
+            const grid = document.getElementById('projectsGrid');
             const filterBtns = document.querySelectorAll('.filter-btn');
+
+            // Shuffle the project cards (Fisher-Yates) on every page load
+            function shuffleGrid() {
+                const cards = Array.from(grid.querySelectorAll('.project-card'));
+                for (let i = cards.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [cards[i], cards[j]] = [cards[j], cards[i]];
+                }
+                cards.forEach(card => grid.appendChild(card));
+            }
+            shuffleGrid();
+
             const projectCards = document.querySelectorAll('.project-card');
 
             filterBtns.forEach(btn => {
